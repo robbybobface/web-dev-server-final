@@ -4,9 +4,9 @@ import passport from "passport";
 
 const isLoggedIn = (req, res, next) => {
     if (!req.isAuthenticated()) {
-        res.send({ message: "You must be signed in first!" });
+        res.send({ loggedIn: false });
     } else {
-        res.send({ message: "You're logged in" });
+        res.send({ loggedIn: true });
         next();
     }
 };
@@ -18,9 +18,9 @@ const isAccountOwner = async (req, res, next) => {
         res.send(false);
     } else {
         if (!req.user._id.equals(userProfile._id)) {
-            res.send(false);
+            res.send({ accountOwner: false });
         } else {
-            res.send(true);
+            res.send({ accountOwner: true });
             next();
         }
     }
