@@ -30,7 +30,6 @@ const register = async (req, res) => {
     const { email, username, password } = req.body;
     const user = new User({ email, username, password: '' });
     try {
-        console.log(user);
         const registeredUser = await User.register(user, password);
         console.log(registeredUser);
         passport.authenticate("local")(req, res, function () {
@@ -51,11 +50,11 @@ const logout = (req, res) => {
     req.logout();
     req.session.destroy();
     res.send({ success: "Goodbye!" });
+
 };
 
 const login = async (req, res) => {
     res.send({ success: 'Welcome Back!' });
-
 };
 
 const findUserByUsername = async (req, res) => {
