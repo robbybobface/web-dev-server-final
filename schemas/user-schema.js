@@ -4,7 +4,7 @@ import pkg from 'validator';
 
 const { isEmail } = pkg;
 
-const UserSchema = new mongoose.Schema({
+const userSchema = new mongoose.Schema({
     username: {
         type: String,
         required: true,
@@ -18,7 +18,7 @@ const UserSchema = new mongoose.Schema({
     },
 }, { collection: 'users' });
 
-UserSchema.plugin(passportLocalMongoose);
+userSchema.plugin(passportLocalMongoose);
 
-export default UserSchema;
+export default userSchema;
 

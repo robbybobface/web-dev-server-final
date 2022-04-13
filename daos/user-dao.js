@@ -1,9 +1,9 @@
-import User from "../models/user-model.js";
+import userModel from "../models/user-model.js";
 
-export const findAllUsers = () => User.find();
-export const findUserByUsername = (username) => User.findOne({ username: username });
-export const findUserByCredentials = (username, password) => User.find(
+export const findAllUsers = () => userModel.find();
+export const findUserByUsername = (username) => userModel.findOne({ username: username });
+export const findUserByCredentials = (username, password) => userModel.find(
     { username: username, password: password });
-export const createUser = (user) => User.create(user);
-export const deleteUser = (uid) => User.deleteOne({ _id: uid });
-export const updateUser = (uid, user) => User.updateOne({ _id: uid }, { $set: user });
+export const createUser = (user) => userModel.create(user);
+export const deleteUser = (uid) => userModel.deleteOne({ _id: uid });
+export const updateUser = (uid, user) => userModel.updateOne({ _id: uid }, { $set: user });

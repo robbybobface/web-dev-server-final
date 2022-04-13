@@ -12,10 +12,12 @@ const isLoggedIn = (req, res, next) => {
 };
 
 const isAccountOwner = async (req, res, next) => {
-    const username = req.body.username;
+    // console.log(req.body);
+    const { username } = req.body;
+    console.log('the username passed in was ' + username);
     const userProfile = await userDao.findUserByUsername(username);
     if (!req.user) {
-        res.send(false);
+        res.send({ accountOwner: false });
     } else {
         if (!req.user._id.equals(userProfile._id)) {
             res.send({ accountOwner: false });
@@ -59,8 +61,10 @@ const login = async (req, res) => {
 
 const findUserByUsername = async (req, res) => {
     const username = req.params.username;
+    console.log(username);
     const user = await userDao.findUserByUsername(username);
-    if (!user.length) {
+    console.log('the user is' + user);
+    if (!user) {
         res.send({ error: "There is no user with this username" });
     }
     res.json(user);
@@ -76,13 +80,13 @@ const createUser = async (req, res) => {
     const insertedUser = await userDao.createUser(newUser);
     res.json(insertedUser);
 };
-//
+
 const deleteUser = async (req, res) => {
     const userIdToDelete = req.params.uid;
     const status = await userDao.deleteUser(userIdToDelete);
     res.send(status);
 };
-//
+
 const updateUser = async (req, res) => {
     const userIdToUpdate = req.params.uid;
     const updatedUser = req.body;
@@ -93,7 +97,7 @@ const updateUser = async (req, res) => {
 export default (app) => {
     app.get('/api/auth/user', isLoggedIn);
     app.post('/api/auth/register', register);
-    app.post('/api/auth/login', passport.authenticate('local'), login);
+    app.post('/api/auth/login', passport.authenticate('local', { failureMessage: true }), login);
     app.post('/api/auth/logout', logout);
     app.post('/api/auth/profile', isAccountOwner);
     app.post('/api/profile', profile);
