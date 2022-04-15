@@ -2,6 +2,7 @@ import * as userDao from "../../daos/user-dao.js";
 import User from "../../models/user-model.js";
 import ExpressError from "../../Utils/ExpressError.js";
 import passport from "passport";
+import Fuse from "fuse.js";
 
 const isLoggedIn = (req, res, next) => {
     if (!req.isAuthenticated()) {
@@ -83,8 +84,32 @@ const findUserByUsername = async (req, res) => {
 };
 
 const findAllUsers = async (req, res) => {
-    const users = await userDao.findAllUsers();
-    res.json(users);
+    try {
+        const allUsers = await userDao.findAllUsers();
+        if (req.query.search) {
+            const options = {
+                shouldSort: true,
+                threshold: 0.5,
+                location: 0,
+                distance: 100,
+                maxPatternLength: 32,
+                minMatchCharLength: 2,
+                keys: [ "username", "email" ]
+            };
+            const fuse = new Fuse(allUsers, options);
+            const result = fuse.search(req.query.search);
+            if (result.length < 1) {
+                res.send({ error: "No Users Found" });
+            } else {
+                res.json(result);
+            }
+        } else {
+            res.json(allUsers);
+        }
+    } catch (err) {
+        res.send({ error: "Something went wrong" });
+    }
+
 };
 
 const createUser = async (req, res) => {
