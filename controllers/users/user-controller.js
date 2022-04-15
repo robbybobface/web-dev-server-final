@@ -11,6 +11,8 @@ const isLoggedIn = (req, res, next) => {
     }
 };
 
+const isAdmin = (req, res) => res.json(req.user.admin);
+
 const isAccountOwner = async (req, res, next) => {
     // console.log(req.body);
     const { username } = req.body;
@@ -38,6 +40,15 @@ const register = async (req, res) => {
             res.send("Welcome to the app!");
         });
     } catch (err) {
+        if (/\s/g.test(email)) {
+            res.json({ error: "Emails cannot contain spaces" });
+        }
+        if (/\s/g.test(username)) {
+            res.json({ error: "Usernames cannot contain spaces" });
+        }
+        if (/\s/g.test(password)) {
+            res.json({ error: "Password cannot contain spaces" });
+        }
         if (err.message.includes("duplicate key")) {
             res.json({ error: "This email address is already in use" });
         } else {
