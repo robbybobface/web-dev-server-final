@@ -1,5 +1,6 @@
 import * as userDao from "../../daos/user-dao.js";
 import User from "../../models/user-model.js";
+import ExpressError from "../../Utils/ExpressError.js";
 import passport from "passport";
 
 const isLoggedIn = (req, res, next) => {
@@ -31,24 +32,24 @@ const isAccountOwner = async (req, res, next) => {
 };
 
 const register = async (req, res) => {
-    const { email, username, password } = req.body;
-    const user = new User({ email, username, password: '' });
     try {
+        const { email, username, password } = req.body;
+        if (/\s/g.test(email)) {
+            throw new ExpressError("Emails cannot contain spaces", 400);
+        } else if (/\s/g.test(username)) {
+            throw new ExpressError("Usernames cannot contain spaces", 400);
+        }
+        // else if (/\s/g.test(password)) {
+        //     res.json({ error: "Password cannot contain spaces" });
+        // }
+        const user = new User({ email, username, password: '' });
+
         const registeredUser = await User.register(user, password);
         console.log(registeredUser);
         passport.authenticate("local")(req, res, function () {
             res.send("Welcome to the app!");
         });
     } catch (err) {
-        if (/\s/g.test(email)) {
-            res.json({ error: "Emails cannot contain spaces" });
-        }
-        if (/\s/g.test(username)) {
-            res.json({ error: "Usernames cannot contain spaces" });
-        }
-        if (/\s/g.test(password)) {
-            res.json({ error: "Password cannot contain spaces" });
-        }
         if (err.message.includes("duplicate key")) {
             res.json({ error: "This email address is already in use" });
         } else {
