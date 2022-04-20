@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import userSchema from "./user-schema";
+import userSchema from "./user-schema.js";
 
 const albumSchema = new mongoose.Schema({
     name: {
@@ -11,7 +11,7 @@ const albumSchema = new mongoose.Schema({
         required: true,
     } ],
     albumId: {
-        String,
+        type: String,
         required: true,
     },
     likes: [ userSchema ]

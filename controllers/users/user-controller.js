@@ -3,6 +3,7 @@ import User from "../../models/user-model.js";
 import ExpressError from "../../Utils/ExpressError.js";
 import passport from "passport";
 import Fuse from "fuse.js";
+import UserModel from "../../models/user-model.js";
 
 const isLoggedIn = (req, res, next) => {
     if (!req.isAuthenticated()) {
@@ -10,6 +11,20 @@ const isLoggedIn = (req, res, next) => {
     } else {
         res.send({ loggedIn: true });
         next();
+    }
+};
+
+const changePassword = (req, res, next) => {
+    if (!req.isAuthenticated()) {
+        res.send();
+    } else {
+        req.user.setPassword(req.body.password, function (err, user) {
+            if (err) {
+                res.send({ error: err });
+            } else {
+                res.send({ success: "Password Updated" });
+            }
+        });
     }
 };
 
@@ -35,10 +50,16 @@ const isAccountOwner = async (req, res, next) => {
 const register = async (req, res) => {
     try {
         const { email, username, password } = req.body;
+        const userProfile = await userDao.findUserByUsername(username);
+        const userEmail = await userDao.findUserByEmail(email);
         if (/\s/g.test(email)) {
             throw new ExpressError("Emails cannot contain spaces", 400);
         } else if (/\s/g.test(username)) {
             throw new ExpressError("Usernames cannot contain spaces", 400);
+        } else if (userProfile !== null) {
+            throw new ExpressError("Username is already taken", 400);
+        } else if (userEmail !== null) {
+            throw new ExpressError("Email is already taken", 400);
         }
         // else if (/\s/g.test(password)) {
         //     res.json({ error: "Password cannot contain spaces" });
@@ -53,6 +74,8 @@ const register = async (req, res) => {
     } catch (err) {
         if (err.message.includes("duplicate key")) {
             res.json({ error: "This email address is already in use" });
+        } else if (err.message.includes('failed: email: invalid email')) {
+            res.json({ error: "Please input a valid email address" });
         } else {
             res.json({ error: err.message });
         }
@@ -79,32 +102,105 @@ const findUserByUsername = async (req, res) => {
     console.log('the user is' + user);
     if (!user) {
         res.send({ error: "There is no user with this username" });
+    } else {
+        res.json(user);
     }
-    res.json(user);
 };
 
+const findUserByEmail = async (req, res) => {
+    const email = req.params.email;
+    console.log(email);
+    const user = await userDao.findUserByEmail(email);
+    console.log('the user is' + user);
+    if (!user) {
+        res.send({ error: "There is no user with this email" });
+    } else {
+        res.json(user);
+    }
+};
+
+const ITEMS_PER_PAGE = 10;
+
 const findAllUsers = async (req, res) => {
+    const page = req.query.page || 1;
+
+    const query = {};
+
     try {
-        const allUsers = await userDao.findAllUsers();
-        if (req.query.search) {
+        const skip = (page - 1) * ITEMS_PER_PAGE;
+        const count = await UserModel.estimatedDocumentCount(query);
+        // console.log(count);
+        const pageCount = Math.ceil(count / ITEMS_PER_PAGE);
+        // console.log(pageCount);
+        const allUsers = await userDao.findAllUsers().limit(ITEMS_PER_PAGE).skip(skip);
+        if (req.query.page && req.query.search) {
+            // const allUsers = await UserModel.find(query);
+            // const allUsers = await userDao.findAllUsers();
             const options = {
+                includeScore: false,
+                isCaseSensitive: false,
                 shouldSort: true,
                 threshold: 0.5,
                 location: 0,
                 distance: 100,
-                maxPatternLength: 32,
-                minMatchCharLength: 2,
+                minMatchCharLength: 1,
                 keys: [ "username", "email" ]
             };
             const fuse = new Fuse(allUsers, options);
             const result = fuse.search(req.query.search);
+            const count = fuse.search(req.query.search).length;
+            const pageCount = Math.ceil(count / ITEMS_PER_PAGE);
+            console.log('The new page count is ' + pageCount);
             if (result.length < 1) {
-                res.send({ error: "No Users Found" });
+                throw new ExpressError("No User Found", 400);
             } else {
-                res.json(result);
+                const userResults = result.map(user => user.item);
+                res.json({
+                    pagination: {
+                        count,
+                        pageCount,
+                    },
+                    userResults
+                });
+            }
+        } else if (req.query.search) {
+            const options = {
+                includeScore: false,
+                isCaseSensitive: false,
+                shouldSort: true,
+                threshold: 0.5,
+                location: 0,
+                distance: 100,
+                minMatchCharLength: 1,
+                keys: [ "username", "email" ]
+            };
+            const fuse = new Fuse(allUsers, options);
+            const result = fuse.search(req.query.search);
+            const count = fuse.search(req.query.search).length;
+            const pageCount = Math.ceil(count / ITEMS_PER_PAGE);
+            console.log('The new page count is ' + pageCount);
+            // console.log(result);
+            if (result.length < 1) {
+                throw new ExpressError("No User Found", 400);
+            } else {
+                const userResults = result.map(user => user.item);
+                res.json({
+                    pagination: {
+                        count,
+                        pageCount,
+                    },
+                    userResults
+                });
             }
         } else {
-            res.json(allUsers);
+            const userResults = allUsers;
+            res.json({
+                pagination: {
+                    count,
+                    pageCount,
+                },
+                userResults
+            });
         }
     } catch (err) {
         res.send({ error: "Something went wrong" });
@@ -137,9 +233,11 @@ export default (app) => {
     app.post('/api/auth/login', passport.authenticate('local', { failureMessage: true }), login);
     app.post('/api/auth/logout', logout);
     app.post('/api/auth/profile', isAccountOwner);
+    app.post('/api/auth/change-password', changePassword);
     app.post('/api/profile', profile);
     app.get('/api/users', findAllUsers);
     app.get('/api/users/:username', findUserByUsername);
+    app.get('/api/users/:email', findUserByEmail);
     app.post('/api/users', createUser);
     app.delete('/api/users/:uid', deleteUser);
     app.put('/api/users/:uid', updateUser);

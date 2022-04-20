@@ -12,6 +12,9 @@ import User from './models/user-model.js';
 import userController from "./controllers/users/user-controller.js";
 import tuitsController from "./controllers/tuits/tuits-controller.js";
 import SessionController from "./controllers/session/session-controller.js";
+import TrackController from "./controllers/tracks/track-controller.js";
+import AlbumController from "./controllers/albums/album-controller.js";
+import ArtistController from "./controllers/artists/artist-controller.js";
 
 const dbUrl = 'mongodb://localhost:27017/web-dev-final';
 mongoose.connect(dbUrl, {
@@ -79,6 +82,9 @@ passport.deserializeUser(User.deserializeUser());
 tuitsController(app);
 userController(app);
 SessionController(app);
+TrackController(app);
+AlbumController(app);
+ArtistController(app);
 
 app.get('/', (req, res) => {
     res.send('Web-Dev Final Project');

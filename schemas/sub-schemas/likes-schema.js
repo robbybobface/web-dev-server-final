@@ -18,4 +18,10 @@ export const likedArtistSchema = new mongoose.Schema({
     }
 });
 
+export const likedByUsersSchema = new mongoose.Schema({
+    username: {
+        type: String
+    }
+});
+
 

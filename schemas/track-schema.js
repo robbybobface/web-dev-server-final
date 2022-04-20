@@ -1,17 +1,17 @@
 import mongoose from "mongoose";
-import userSchema from "./user-schema";
+import userSchema from "./user-schema.js";
 
 const trackSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
     },
-    artist: [ {
+    artists: [ {
         type: String,
         required: true,
     } ],
     trackId: {
-        String,
+        type: String,
         required: true,
     },
     likes: [ userSchema ]

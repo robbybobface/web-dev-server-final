@@ -13,12 +13,10 @@ const userSchema = new mongoose.Schema({
     username: {
         type: String,
         required: true,
-        unique: true
     },
     email: {
         type: String,
         required: true,
-        unique: true,
         validate: [ isEmail, 'invalid email' ]
     },
     admin: {
@@ -28,6 +26,9 @@ const userSchema = new mongoose.Schema({
     likedSongs: [ likedSongSchema ],
     likedAlbums: [ likedAlbumSchema ],
     likedArtists: [ likedArtistSchema ],
+    bio: {
+        type: String
+    }
 
 }, { collection: 'users' });
 
