@@ -35,7 +35,9 @@ const isAccountOwner = async (req, res, next) => {
     const { username } = req.body;
     console.log('the username passed in was ' + username);
     const userProfile = await userDao.findUserByUsername(username);
-    if (!req.user) {
+    if (!userProfile) {
+        res.send({ accountOwner: false });
+    } else if (!req.user) {
         res.send({ accountOwner: false });
     } else {
         if (!req.user._id.equals(userProfile._id)) {
