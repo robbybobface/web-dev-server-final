@@ -65,10 +65,8 @@ const sessionConfig = {
     }
 };
 
-if (process.env.ENV === 'production') {
-    app.set('trust proxy', 1);
-    sessionConfig.cookie.secure = true;
-}
+app.set('trust proxy', 1);
+sessionConfig.cookie.secure = true;
 
 app.use(session(sessionConfig));
 
