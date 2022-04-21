@@ -6,7 +6,6 @@ import Fuse from "fuse.js";
 import UserModel from "../../models/user-model.js";
 
 const isLoggedIn = (req, res, next) => {
-    console.log(req.user);
     if (!req.isAuthenticated()) {
         res.send({ loggedIn: false });
     } else {
@@ -86,8 +85,7 @@ const register = async (req, res) => {
 };
 
 const profile = (req, res) => {
-    console.log(req.user);
-    res.json(req.user);
+    res.json(req.session.user);
 };
 
 const logout = (req, res) => {
@@ -98,7 +96,14 @@ const logout = (req, res) => {
 };
 
 const login = async (req, res) => {
-    res.send({ success: 'Welcome Back!' });
+    req.session.user = req.user;
+    req.session.save(err => {
+        if (err) {
+            console.log(err);
+        } else {
+            res.send({ success: 'Welcome Back!' });
+        }
+    });
 };
 
 const findUserByUsername = async (req, res) => {
