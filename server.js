@@ -37,7 +37,7 @@ app.use(cors({
 
 app.use(express.json());
 
-const secret = process.env.SECRET || 'thisisthesecretcode';
+const secret = process.env.SECRET;
 
 const store = new MongoDBStore({
         mongoUrl: dbUrl,
