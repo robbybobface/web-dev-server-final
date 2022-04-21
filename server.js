@@ -32,7 +32,8 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cors({
     credentials: true,
-    origin: 'http://localhost:3000'
+    origin: 'http://localhost:3000' || process.env.WEB_DEV_FINAL_URL
+        || 'https://spotify-search-final.netlify.app',
 }));
 
 app.use(express.json());
