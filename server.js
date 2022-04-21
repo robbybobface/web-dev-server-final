@@ -16,7 +16,7 @@ import TrackController from "./controllers/tracks/track-controller.js";
 import AlbumController from "./controllers/albums/album-controller.js";
 import ArtistController from "./controllers/artists/artist-controller.js";
 
-const dbUrl = 'mongodb://localhost:27017/web-dev-final';
+const dbUrl = process.env.DB_URI || 'mongodb://localhost:27017/web-dev-final';
 mongoose.connect(dbUrl, {
     useNewUrlParser: true,
     useUnifiedTopology: true
