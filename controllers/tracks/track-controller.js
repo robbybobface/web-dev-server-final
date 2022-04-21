@@ -25,9 +25,9 @@ const createTrack = async (req, res) => {
 
 const deleteTrack = async (req, res) => {
     const trackIdToDelete = req.params.uid;
-    console.log(trackIdToDelete);
+    // console.log(trackIdToDelete);
     const status = await trackDao.deleteTrack(trackIdToDelete);
-    console.log(status);
+    // console.log(status);
     res.send(status);
 };
 

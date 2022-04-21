@@ -3,7 +3,7 @@ import * as artistDao from "../../daos/artist-dao.js";
 const findArtistById = async (req, res) => {
     const artistId = req.params.artistId;
     const artist = await artistDao.findArtistById(artistId);
-    console.log(artist)
+    // console.log(artist)
     if (!artist) {
 
         res.send({ error: "There is no artist with this id" });

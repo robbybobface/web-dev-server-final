@@ -33,7 +33,7 @@ const isAdmin = (req, res) => res.json(req.user.admin);
 const isAccountOwner = async (req, res, next) => {
     // console.log(req.body);
     const { username } = req.body;
-    console.log('the username passed in was ' + username);
+    // console.log('the username passed in was ' + username);
     const userProfile = await userDao.findUserByUsername(username);
     if (!userProfile) {
         res.send({ accountOwner: false });
@@ -69,7 +69,7 @@ const register = async (req, res) => {
         const user = new User({ email, username, password: '' });
 
         const registeredUser = await User.register(user, password);
-        console.log(registeredUser);
+        // console.log(registeredUser);
         passport.authenticate("local")(req, res, function () {
             res.send("Welcome to the app!");
         });
@@ -96,16 +96,16 @@ const logout = (req, res) => {
 };
 
 const login = async (req, res) => {
-    console.log(req.user)
+    // console.log(req.user)
     res.send({ success: 'Welcome Back!' });
 
 };
 
 const findUserByUsername = async (req, res) => {
     const username = req.params.username;
-    console.log(username);
+    // console.log(username);
     const user = await userDao.findUserByUsername(username);
-    console.log('the user is' + user);
+    // console.log('the user is' + user);
     if (!user) {
         res.send({ error: "There is no user with this username" });
     } else {
@@ -115,9 +115,9 @@ const findUserByUsername = async (req, res) => {
 
 const findUserByEmail = async (req, res) => {
     const email = req.params.email;
-    console.log(email);
+    // console.log(email);
     const user = await userDao.findUserByEmail(email);
-    console.log('the user is' + user);
+    // console.log('the user is' + user);
     if (!user) {
         res.send({ error: "There is no user with this email" });
     } else {
@@ -156,7 +156,7 @@ const findAllUsers = async (req, res) => {
             const result = fuse.search(req.query.search);
             const count = fuse.search(req.query.search).length;
             const pageCount = Math.ceil(count / ITEMS_PER_PAGE);
-            console.log('The new page count is ' + pageCount);
+            // console.log('The new page count is ' + pageCount);
             if (result.length < 1) {
                 throw new ExpressError("No User Found", 400);
             } else {
@@ -184,7 +184,7 @@ const findAllUsers = async (req, res) => {
             const result = fuse.search(req.query.search);
             const count = fuse.search(req.query.search).length;
             const pageCount = Math.ceil(count / ITEMS_PER_PAGE);
-            console.log('The new page count is ' + pageCount);
+            // console.log('The new page count is ' + pageCount);
             // console.log(result);
             if (result.length < 1) {
                 throw new ExpressError("No User Found", 400);
