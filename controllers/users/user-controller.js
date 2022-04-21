@@ -85,7 +85,7 @@ const register = async (req, res) => {
 };
 
 const profile = (req, res) => {
-    res.json(req.session.user);
+    res.json(req.user);
 };
 
 const logout = (req, res) => {
@@ -96,14 +96,9 @@ const logout = (req, res) => {
 };
 
 const login = async (req, res) => {
-    req.session.user = req.user;
-    req.session.save(err => {
-        if (err) {
-            console.log(err);
-        } else {
-            res.send({ success: 'Welcome Back!' });
-        }
-    });
+    console.log(req.user)
+    res.send({ success: 'Welcome Back!' });
+
 };
 
 const findUserByUsername = async (req, res) => {

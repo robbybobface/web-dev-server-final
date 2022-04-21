@@ -44,7 +44,8 @@ const store = new MongoDBStore({
         touchAfter: 24 * 60 * 60,
         crypto: {
             secret: secret
-        }
+        },
+        autoRemove: 'native'
     }
 );
 
@@ -61,10 +62,12 @@ const sessionConfig = {
     cookie: {
         httpOnly: true,
         expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
-        maxAge: 1000 * 60 * 60 * 24 * 7
+        maxAge: 1000 * 60 * 60 * 24 * 7,
+        sameSite: 'none'
     }
 };
 
+app.enable('trust proxy');
 app.use(session(sessionConfig));
 
 app.use(passport.initialize());
