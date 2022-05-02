@@ -16,8 +16,7 @@ import TrackController from "./controllers/tracks/track-controller.js";
 import AlbumController from "./controllers/albums/album-controller.js";
 import ArtistController from "./controllers/artists/artist-controller.js";
 
-const dbUrl = process.env.DB_URI;
-// || 'mongodb://localhost:27017/web-dev-final';
+const dbUrl = 'mongodb://localhost:27017/web-dev-final';
 mongoose.connect(dbUrl, {
     useNewUrlParser: true,
     useUnifiedTopology: true
@@ -33,8 +32,7 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cors({
     credentials: true,
-    origin: process.env.WEB_DEV_FINAL_URL
-    // || 'http://localhost:3000'
+    origin: 'http://localhost:3000'
 }));
 
 app.use(express.json());
@@ -62,12 +60,12 @@ const sessionConfig = {
     resave: false,
     saveUninitialized: true,
     cookie: {
-        httpOnly: true,
-        secure: true,
-        // secure: false,
+        // httpOnly: true,
+        // secure: true,
+        secure: false,
         expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
         maxAge: 1000 * 60 * 60 * 24 * 7,
-        sameSite: 'none'
+        // sameSite: 'none'
     }
 };
 

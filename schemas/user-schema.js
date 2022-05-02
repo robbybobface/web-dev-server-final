@@ -26,6 +26,7 @@ const userSchema = new mongoose.Schema({
     likedSongs: [ likedSongSchema ],
     likedAlbums: [ likedAlbumSchema ],
     likedArtists: [ likedArtistSchema ],
+    likedGenres: [ String ],
     bio: {
         type: String
     }
